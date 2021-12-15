@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block title %}RSA{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="row d-flex align-items-center" style="min-height: 60vh;">
+      <div class="col">
+        <h1 class="display-2 mb-5">Penerapan RSA sederhana</h1>
+
+        <!--
+          ====================================================================
+                                    GENERATE KEY
+          ====================================================================
+        -->
+        <h1 class="display-4 mb-4">Generate Key</h1>
+
+        <!-- form text dan shift -->
+        <form class="input-form" action="/rsa?type=genkey"
+            method="POST" data-op-type="genkey" class="mb-2">
+
+          <div class="mb-3 w-50">
+            <label class="form-label">Key</label>
+
+            <input class="input-key form-control mb-3" name="p" type="text"
+                placeholder="e.g. P (bilangan prima)"
+                >
+            <input class="input-key form-control" name="q" type="text"
+                placeholder="e.g. Q (bilangan prima)"
+                >
+          </div>
+
+          <input type="hidden" class="input-real-data" name="data" data-op-type="genkey">
+
+          <button type="submit" class="btn btn-primary">
+            Submit
+          </button>
+        </form>
+
+        <!-- Key Generated -->
+        <div class="mb-5 w-50">
+          <label class="col-form-label">Key</label>
+
+          <div class="output-box d-none" data-op-type="genkey">
+            <p class="output-text-result"><em></em></p>
+            <p class="output-file-result1"><a>Download file</a></p>
+            <p class="output-file-result2"><a>Download file</a></p>
+          </div>
+        </div>
+
+        <!--
+          ====================================================================
+                                      ENKRIPSI
+          ====================================================================
+        -->
+
+        <h1 class="display-4 mb-4">Enkripsi</h1>
+
+        <!-- form text dan shift -->
+        <form class="input-form" action="/rsa?type=enc"
+            method="POST" data-op-type="enc" class="mb-2">
+
+          <label class="form-label">Input</label>
+
+          <div class="mb-3 w-50">
+            <select class="input-type-select form-select mb-3" data-op-type="enc">
+              <option value="text" selected>Teks</option>
+              <option value="file">File</option>
+            </select>
+
+            <div class="input-box" data-op-type="enc"></div>
+          </div>
+
+          <div class="mb-3 w-50">
+            <select class="input-type-select form-select mb-3" data-op-type="enc1">
+              <option value="text" selected>Teks</option>
+              <option value="file">File</option>
+            </select>
+
+            <div class="input-box" data-op-type="enc1"></div>
+          </div>
+
+          <input type="" class="input-real-data" name="data" data-op-type="enc">
+          <input type="" class="input-real-data-2" name="key" data-op-type="enc1">
+
+          <button type="submit" class="btn btn-primary">
+            Submit
+          </button>
+        </form>
+
+        <!-- hasil enkripsi -->
+        <div class="mb-5 w-50">
+          <label class="col-form-label">Hasil Enkripsi</label>
+
+          <div class="output-box d-none" data-op-type="enc">
+            <p class="output-text-result"><em></em></p>
+            <p class="output-file-result"><a>Download file</a></p>
+          </div>
+        </div>
+
+        <!--
+          ====================================================================
+                                      DEKRIPSI
+          ====================================================================
+        -->
+
+        <h1 class="display-4 mb-4">Dekripsi</h1>
+
+        <!-- form text dan shift -->
+        <form class="input-form" action="/rsa?type=dec"
+            method="POST" data-op-type="dec" class="mb-2">
+
+          <label class="form-label">Input</label>
+          <span class="input-data-err d-none text-danger" data-op-type="dec">
+            &nbsp;<span></span>
+          </span>
+
+          <div class="mb-3 w-50">
+            <select class="input-type-select form-select mb-3" data-op-type="dec">
+              <option value="text" selected>Teks</option>
+              <option value="file">File</option>
+            </select>
+
+            <div class="input-box" data-op-type="dec"></div>
+          </div>
+
+          <div class="mb-3 w-50">
+            <select class="input-type-select form-select mb-3" data-op-type="dec1">
+              <option value="text" selected>Teks</option>
+              <option value="file">File</option>
+            </select>
+
+            <div class="input-box" data-op-type="dec1"></div>
+          </div>
+
+          <input type="" class="input-real-data" name="data" data-op-type="dec">
+          <input type="" class="input-real-data-2" name="key" data-op-type="dec1">
+
+          <button type="submit" class="btn btn-primary">
+            Submit
+          </button>
+        </form>
+
+        <!-- hasil dekripsi -->
+        <div class="mb-5 w-50">
+          <label class="col-form-label">Hasil Dekripsi</label>
+
+          <div class="output-box d-none" data-op-type="dec">
+            <p class="output-text-result"><em></em></p>
+            <p class="output-file-result"><a>Download file</a></p>
+          </div>
+        </div>
+
+        <!--
+          ====================================================================
+                                      TEMPLATES
+          ====================================================================
+        -->
+
+        <template id="template-input-textarea">
+          <textarea class="input-textarea input-field form-control" placeholder="masukkan teks"></textarea>
+        </template>
+
+        <template id="template-input-file">
+          <input class="input-file input-field" type="file">
+        </template>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    // Diletakkan di sini agar syntax highlighting di
+    // tag <script> yang satunya tidak bermasalah :D.
+    const serverOutput = {{ output|safe }};
+  </script>
+
+  <script>
+    window.onload = function() {
+
+      // Template untuk membuat tipe input/output dapat
+      // dinamis dengan mudah.
+      const TEMPLATES = {
+        INPUT: {
+          TEXTAREA: document.querySelector("#template-input-textarea"),
+          FILE: document.querySelector("#template-input-file"),
+        },
+      };
+
+      /**
+       * Logika input.
+       */
+      (function () {
+        let input = {
+          enc: "",
+          enc1: "",
+          dec: "",
+          dec1: "",
+        };
+
+        /**
+         * Input handlers.
+         */
+        const inputHandlers = {
+          text: function (event, opType) {
+            input[opType] = event.target.value;
+          },
+
+          file: function (event, opType) {
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function (event) {
+              input[opType] = event.target.result;
+            });
+
+            reader.readAsText(event.target.files[0]);
+          },
+        };
+
+        /**
+         * Handle perubahan tipe data input.
+         */
+        document
+            .querySelectorAll(".input-type-select")
+            .forEach(function (selectTag) {
+              selectTag.addEventListener("change", function (event) {
+                const inputType = event.target.value;
+                const opType = event.target.dataset.opType;
+                console.log(opType)
+
+                const newInputEl = inputType == "text"
+                    ? TEMPLATES.INPUT.TEXTAREA
+                    : TEMPLATES.INPUT.FILE;
+
+                input[opType] = "";
+                document.querySelector(`.input-box[data-op-type="${opType}"]`)
+                    .innerHTML = newInputEl.innerHTML;
+
+                document.querySelector(`.input-box[data-op-type="${opType}"] .input-field`)
+                    .addEventListener("change", function (event) {
+                      if (inputType === "text") {
+                        inputHandlers.text(event, opType);
+                      } else {
+                        inputHandlers.file(event, opType);
+                      }
+                    });
+              });
+            })
+
+        /**
+         * Handle submit.
+         */
+        document
+            .querySelectorAll(".input-form")
+            .forEach(function (form) {
+              form.addEventListener("submit", function (event) {
+                const opType = event.target.dataset.opType;
+                console.log(opType)
+
+                document.querySelector(`.input-real-data[data-op-type="${opType}"]`)
+                    .value = input[opType];
+                document.querySelector(`.input-real-data-2[data-op-type="enc1"]`)
+                    .value = input['enc1'];
+                document.querySelector(`.input-real-data-2[data-op-type="dec1"]`)
+                    .value = input['dec1'];
+              });
+            });
+
+        // Trigger inisialisasi ketika page baru diload
+        // pertama kali.
+        document
+            .querySelectorAll(".input-type-select")
+            .forEach(function (el) {
+              el.dispatchEvent(new Event("change"));
+            })
+      })();
+
+      // (function () {
+      //   let input = {
+      //     enc1: "",
+      //     dec: "",
+      //   };
+
+      //   /**
+      //    * Input handlers.
+      //    */
+      //   const inputHandlers = {
+      //     text: function (event, opType) {
+      //       input[opType] = event.target.value;
+      //     },
+
+      //     file: function (event, opType) {
+      //       const reader = new FileReader();
+
+      //       reader.addEventListener("load", function (event) {
+      //         input[opType] = event.target.result;
+      //       });
+
+      //       reader.readAsText(event.target.files[0], "ASCII");
+      //     },
+      //   };
+
+      //   /**
+      //    * Handle perubahan tipe data input.
+      //    */
+      //   document
+      //       .querySelectorAll(".input-type-select")
+      //       .forEach(function (selectTag) {
+      //         selectTag.addEventListener("change1", function (event) {
+      //           const inputType = event.target.value;
+      //           const opType = event.target.dataset.opType;
+      //           console.log(opType)
+
+      //           const newInputEl = inputType == "text"
+      //               ? TEMPLATES.INPUT.TEXTAREA
+      //               : TEMPLATES.INPUT.FILE;
+
+      //           input[opType] = "";
+      //           document.querySelector(`.input-box[data-op-type="${opType}"]`)
+      //               .innerHTML = newInputEl.innerHTML;
+
+      //           document.querySelector(`.input-box[data-op-type="${opType}"] .input-field`)
+      //               .addEventListener("change", function (event) {
+      //                 if (inputType === "text") {
+      //                   inputHandlers.text(event, opType);
+      //                 } else {
+      //                   inputHandlers.file(event, opType);
+      //                 }
+      //               });
+      //         });
+      //       })
+
+      //   /**
+      //    * Handle submit.
+      //    */
+      //   document
+      //       .querySelectorAll(".input-form")
+      //       .forEach(function (form) {
+      //         form.addEventListener("submit", function (event) {
+      //           const opType = event.target.dataset.opType;
+
+      //           document.querySelector(`.input-real-data-2[data-op-type="${opType}"]`)
+      //               .value = input[opType];
+      //         });
+      //       });
+
+      //   // Trigger inisialisasi ketika page baru diload
+      //   // pertama kali.
+      //   document
+      //       .querySelectorAll(".input-type-select")
+      //       .forEach(function (el) {
+      //         el.dispatchEvent(new Event("change1"));
+      //       })
+      // })();
+
+      /**
+       * Logika output
+       */
+      (function () {
+        const output = serverOutput;
+
+        const emptyOutput = output
+            && Object.keys(output).length === 0
+            && output.constructor === Object;
+
+        if (emptyOutput) {
+          return;
+        }
+
+        const bytestring = output.result
+          .join(" ");
+
+        document.querySelector(`.output-box[data-op-type="${output.type}"]`)
+            .classList.remove("d-none");
+
+        // tampilkan bytestring hasil
+        document
+            .querySelector(`.output-box[data-op-type="${output.type}"] .output-text-result em`)
+            .innerHTML = bytestring;
+
+        // file hasil generate key
+        var pri = output.result[1] + ' ' + output.result[2]
+        var pub = output.result[0] + ' ' + output.result[2]
+        const downloadAnchorTaggankey1 = document
+            .querySelector(`.output-box[data-op-type="genkey"] .output-file-result1 a`)
+
+        downloadAnchorTaggankey1.setAttribute("download", "kunci-publik.pub");
+        downloadAnchorTaggankey1.setAttribute("href", "data:text/plain;charset=utf-8,"
+                                      + encodeURIComponent(pub));
+
+        // file hasil generate key
+        const downloadAnchorTaggankey2 = document
+            .querySelector(`.output-box[data-op-type="genkey"] .output-file-result2 a`)
+
+            downloadAnchorTaggankey2.setAttribute("download", "kunci-privat.pri");
+            downloadAnchorTaggankey2.setAttribute("href", "data:text/plain;charset=utf-8,"
+                                      + encodeURIComponent(pri));
+
+        // file hasil generate key
+        const downlodAnchorTagenc = document
+            .querySelector(`.output-box[data-op-type="enc"] .output-file-result a`)
+
+            downlodAnchorTagenc.setAttribute("download", "hasil-enkripsi.txt");
+            downlodAnchorTagenc.setAttribute("href", "data:text/plain;charset=utf-8,"
+                                      + encodeURIComponent(output.result));
+           
+        // file hasil dekripsi
+        var dec = output.result.join("")
+        const downlodAnchorTagdec = document
+            .querySelector(`.output-box[data-op-type="dec"] .output-file-result a`)
+
+            downlodAnchorTagdec.setAttribute("download", "hasil-dekripsi.txt");
+            downlodAnchorTagdec.setAttribute("href", "data:text/plain;charset=utf-8,"
+                                      + encodeURIComponent(dec));
+
+      })();
+    };
+  </script>
+{% endblock %}

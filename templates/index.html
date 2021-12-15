@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Home Page{% endblock %}
+{% block content %}
+    <div class="container py-5" style="margin-top: 70px">
+        <div class="row d-flex align-items-start">
+            <h1 class="display-2 mb-5">Program Enkripsi dan Dekripsi untuk RSA, ECC, dan NTRU</h1>
+
+            <div class="container" style="margin: 0px 0px 150px">
+                <h1 class="display-4">Metode Enkripsi :</h1>
+                <ul class="display-6 ms-5">
+                    <li class="list-item"><a href="/rsa">RSA</a></li>
+                    <li class="list-item"><a href="/ecc">ECC</a></li>
+                    <li class="list-item"><a href="/ntru">NTRU</a></li>
+                </ul>
+            </div>
+
+            <div class="container">
+                <h1 class="display-4">Disusun Oleh</h1>
+                <ul class="display-6 ms-5">
+                    <li class="list-item">Eduardus Hardi Tjiputra </li>
+                    <li class="list-item">Muhammad Dwi Arfian </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
