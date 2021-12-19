@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 import encryption.RSA as rsa
-import array
+import encryption.ECC as ecc
 import json
 
 
@@ -16,11 +16,8 @@ def RSA():
     output = {}
 
     if request.method == "POST":
-        data = ''
-        p = 0
-        q = 0
-        key = ''
-        msg = ''
+        data,p,q,key = None,None,None,None
+
         op_type = request.args.get("type")
 
         print(op_type)
@@ -50,55 +47,59 @@ def RSA():
             output["result"] = rsa.decrypt(data, key[0], key[1])
 
     return render_template('RSA.html', output=json.dumps(output), is_ext_vignere = True)
-# def RSA():
-#     enk_shitt = ""
-#     dek_shitt = ""
+
+@app.route("/ecc", methods=['POST', 'GET'])
+def ECC():
+    output = {}
+    if request.method == "POST":
+        data,key = None,None
+        op_type = request.args.get("type")
+        print(op_type)
+
+        if op_type == "genkey":
+            output["type"] = "genkey"
+            output["result"] = ecc.genkey()
+            print(output["result"])
+        elif op_type == "enc":
+            key = request.form.get("key")
+            data = request.form.get("data")
+            key = list(map(int, key.split()))
+            print(data)
+            print(key)
+            output["type"] = "enc"
+            output["result"] = ecc.encrypt(data, key[0], key[1])
+            print(output["result"])
+            # while 1:
+            #     continue
+        else:
+            key = request.form.get("key")
+            data = request.form.get("data")
+            key = int(key)
+            data = list(map(int, data.split(',')))
+            print('data', data)
+            print('key', key)
+            output["type"] = "dec"
+            output["result"] = [(ecc.decrypt(data[0], data[1], data[2], data[3], key)).decode('utf-8')]
+            print(output["result"])
+
+    return render_template('ECC.html', output=json.dumps(output), is_ecc = True)
+
+# @app.route("/ntru", methods=['POST', 'GET'])
+# def ntru():
+#     enk_subsitution = ""
+#     dek_subsitution = ""
 #     if request.method == "POST":
-#         p = con.conint(request.form.get("key_enc"))
-#         q = con.conint(request.form.get("key_dec"))
+#         key_enk = con.constring(request.form.get("key_enc"))
+#         key_dek = con.constring(request.form.get("key_dec"))
 #         text_enk = request.form.get("text_enc")
 #         text_dek = request.form.get("text_dec")
 #         if key_enk != -1:
-#             enk_shitt = enc_shitt.encrypt_shitt(text_enk, key_enk)
+#             enk_subsitution = enc_substitution.encrypt_subsitution(text_enk, key_enk)
 #         if key_dek != -1:
-#             dek_shitt = dec_shitt.decrypt_shitt(text_dek, key_dek)
-#         return render_template("RSA.html", content=[enk_shitt, dek_shitt] , is_shift = 'yes')
+#             dek_subsitution = dec_substitution.decrypt_subsitution(text_dek, key_dek)
+#         return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
 #     else:
-#         return render_template("RSA.html", content=[enk_shitt, dek_shitt], is_shift = 'yes')
-
-@app.route("/ecc", methods=['POST', 'GET'])
-def ecc():
-    enk_subsitution = ""
-    dek_subsitution = ""
-    if request.method == "POST":
-        key_enk = con.constring(request.form.get("key_enc"))
-        key_dek = con.constring(request.form.get("key_dec"))
-        text_enk = request.form.get("text_enc")
-        text_dek = request.form.get("text_dec")
-        if key_enk != -1:
-            enk_subsitution = enc_substitution.encrypt_subsitution(text_enk, key_enk)
-        if key_dek != -1:
-            dek_subsitution = dec_substitution.decrypt_subsitution(text_dek, key_dek)
-        return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
-    else:
-        return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
-
-@app.route("/ntru", methods=['POST', 'GET'])
-def ntru():
-    enk_subsitution = ""
-    dek_subsitution = ""
-    if request.method == "POST":
-        key_enk = con.constring(request.form.get("key_enc"))
-        key_dek = con.constring(request.form.get("key_dec"))
-        text_enk = request.form.get("text_enc")
-        text_dek = request.form.get("text_dec")
-        if key_enk != -1:
-            enk_subsitution = enc_substitution.encrypt_subsitution(text_enk, key_enk)
-        if key_dek != -1:
-            dek_subsitution = dec_substitution.decrypt_subsitution(text_dek, key_dek)
-        return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
-    else:
-        return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
+#         return render_template("Subtitutioncipherstandard.html", content=[enk_subsitution, dek_subsitution], is_substitution = 'yes')
 
 if __name__ == "__name_-":
     app.run()

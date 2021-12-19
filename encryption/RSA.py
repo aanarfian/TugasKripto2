@@ -5,10 +5,10 @@ import sympy
 
 def checkprime(p, q):
     if not sympy.isprime(p):
-        print("ERROR p is not prime")
+        print("ERROR p tidak prima")
         sys.exit()
     if not sympy.isprime(q):
-        print("ERROR q is not prime")
+        print("ERROR q tidak prima")
         sys.exit()
 
 def genkey(a,b):
@@ -23,12 +23,12 @@ def genkey(a,b):
     while 1:
         # random angka e 1<e<f dimana e coprime dengan f
         e = random.randint(1, f)
-        if gcd(e, f) == 1:   # Condition for coprime
+        if gcd(e, f) == 1:  
             break
 
     for i in range(1, n-1):
         if ((i * e) % f) == 1:
-            d = i         # d is private key.
+            d = i         #private key.
             break
 
     print("Public Key is:", e, n)
@@ -55,8 +55,8 @@ def decrypt(cipher_enc, d, n):
 
 #contoh prime number : 6679	6689 6691 6701 6703	6709 6719 6733 6737	6761 6763 6779 6781	6791 6793 6803 6823	6827 6829 6833
 if __name__ == "__main__":
-    a = input("Enter a large prime no P:")
-    b = input("Enter another large prime no Q:")
-    msg = input("Enter the message:")
-    RSA(a,b,msg)
+    a = input("masukkan no P:")
+    b = input("masukkan no Q:")
+    msg = input("pesan:")
+    genkey(a,b)
 

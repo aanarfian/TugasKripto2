@@ -19,21 +19,9 @@
         <form class="input-form" action="/ecc?type=genkey"
             method="POST" data-op-type="genkey" class="mb-2">
 
-          <div class="mb-3 w-50">
-            <label class="form-label">Key</label>
-
-            <input class="input-key form-control mb-3" name="p" type="text"
-                placeholder="e.g. P (bilangan prima)"
-                >
-            <input class="input-key form-control" name="q" type="text"
-                placeholder="e.g. Q (bilangan prima)"
-                >
-          </div>
-
-          <input type="hidden" class="input-real-data" name="data" data-op-type="genkey">
 
           <button type="submit" class="btn btn-primary">
-            Submit
+            Buat Kunci
           </button>
         </form>
 
@@ -381,8 +369,9 @@
             .innerHTML = bytestring;
 
         // file hasil generate key
-        var pri = output.result[1] + ' ' + output.result[2]
-        var pub = output.result[0] + ' ' + output.result[2]
+        var pri = output.result[0]
+        console.log(pri, String(output.result[0]))
+        var pub = String(output.result[1]) + ' ' + String(output.result[2])
         const downloadAnchorTaggankey1 = document
             .querySelector(`.output-box[data-op-type="genkey"] .output-file-result1 a`)
 
@@ -393,7 +382,6 @@
         // file hasil generate key
         const downloadAnchorTaggankey2 = document
             .querySelector(`.output-box[data-op-type="genkey"] .output-file-result2 a`)
-
             downloadAnchorTaggankey2.setAttribute("download", "kunci-privat.pri");
             downloadAnchorTaggankey2.setAttribute("href", "data:text/plain;charset=utf-8,"
                                       + encodeURIComponent(pri));
@@ -401,16 +389,15 @@
         // file hasil enkripsi
         const downlodAnchorTagenc = document
             .querySelector(`.output-box[data-op-type="enc"] .output-file-result a`)
-
             downlodAnchorTagenc.setAttribute("download", "hasil-enkripsi.txt");
             downlodAnchorTagenc.setAttribute("href", "data:text/plain;charset=utf-8,"
                                       + encodeURIComponent(output.result));
            
         // file hasil dekripsi
-        var dec = output.result.join("")
+        var dec = output.result
+        console.log(output.result)
         const downlodAnchorTagdec = document
             .querySelector(`.output-box[data-op-type="dec"] .output-file-result a`)
-
             downlodAnchorTagdec.setAttribute("download", "hasil-dekripsi.txt");
             downlodAnchorTagdec.setAttribute("href", "data:text/plain;charset=utf-8,"
                                       + encodeURIComponent(dec));
