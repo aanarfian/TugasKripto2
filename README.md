@@ -1,7 +1,5 @@
 # TugasKripto2
 
-# TugasKripto
-
 # Persiapan
 
 Install Python terbaru sama flask ya gan 😁
@@ -18,12 +16,3 @@ $env:FLASK_APP = "ui"
 flask run / python -m flask run
 
 kalo masalahnya di cmd/powershell nya cari google ya lupa carane wkwk
-
-list tugas
-- Shitt Cipher standard (26 huruf alfabet)
-- Subtitution cipher standard (26 huruf alfabet)
-- Affine Cipher (26 huruf alfabet)
-- Vigenere Cipher standard (26 huruf alfabet)
-- Extended Vigenere Cipher (256 karakter ASCII)
-- Hill chipher (26 huruf alfabet)
-- Playfair Cipher (26 huruf alfabet)
