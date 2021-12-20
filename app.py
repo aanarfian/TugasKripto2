@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import encryption.RSA as rsa
 import encryption.ECC as ecc
+import encryption.NTRU as ntru
 import json
 
 
@@ -46,7 +47,7 @@ def RSA():
             output["type"] = "dec"
             output["result"] = rsa.decrypt(data, key[0], key[1])
 
-    return render_template('RSA.html', output=json.dumps(output), is_ext_vignere = True)
+    return render_template('RSA.html', output=json.dumps(output), is_rsa = True)
 
 @app.route("/ecc", methods=['POST', 'GET'])
 def ECC():
@@ -83,6 +84,37 @@ def ECC():
             print(output["result"])
 
     return render_template('ECC.html', output=json.dumps(output), is_ecc = True)
+
+@app.route("/ntru", methods=['POST', 'GET'])
+def NTRU():
+    output = {}
+    if request.method == "POST":
+        data,key = None,None
+        op_type = request.args.get("type")
+        print(op_type)
+
+        if op_type == "genkey":
+            output["type"] = "genkey"
+            output["result"] = ntru.genkey()
+            print(output["result"])
+        elif op_type == "enc":
+            # while 1:
+            #     continue
+            key = request.form.get("key")
+            data = request.form.get("data")
+            key = key.replace(',', '\n')
+            output["type"] = "enc"
+            output["result"] = ntru.encryptntru(data, key)
+            print(output["result"])
+        else:
+            key = request.form.get("key")
+            data = request.form.get("data")
+            key = key.replace(',', '\n')
+            output["type"] = "dec"
+            output["result"] = ntru.decryptntru(data, key)
+            print(output["result"])
+
+    return render_template('NTRU.html', output=json.dumps(output), is_ntru = True)
 
 # @app.route("/ntru", methods=['POST', 'GET'])
 # def ntru():

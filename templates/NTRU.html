@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}ECC{% endblock %}
+{% block title %}NTRU{% endblock %}
 
 {% block content %}
   <div class="container py-5">
     <div class="row d-flex align-items-center" style="min-height: 60vh;">
       <div class="col">
-        <h1 class="display-2 mb-5">Penerapan ECC sederhana</h1>
+        <h1 class="display-2 mb-5">Penerapan NTRU sederhana</h1>
 
         <!--
           ====================================================================
@@ -16,7 +16,7 @@
         <h1 class="display-4 mb-4">Generate Key</h1>
 
         <!-- form text dan shift -->
-        <form class="input-form" action="/ecc?type=genkey"
+        <form class="input-form" action="/ntru?type=genkey"
             method="POST" data-op-type="genkey" class="mb-2">
 
 
@@ -45,7 +45,7 @@
         <h1 class="display-4 mb-4">Enkripsi</h1>
 
         <!-- form text dan shift -->
-        <form class="input-form" action="/ecc?type=enc"
+        <form class="input-form" action="/ntru?type=enc"
             method="POST" data-op-type="enc" class="mb-2">
 
           <label class="form-label">Input</label>
@@ -95,7 +95,7 @@
         <h1 class="display-4 mb-4">Dekripsi</h1>
 
         <!-- form text dan shift -->
-        <form class="input-form" action="/ecc?type=dec"
+        <form class="input-form" action="/ntru?type=dec"
             method="POST" data-op-type="dec" class="mb-2">
 
           <label class="form-label">Input</label>
@@ -200,7 +200,14 @@
             const reader = new FileReader();
 
             reader.addEventListener("load", function (event) {
-              input[opType] = event.target.result;
+              function replaceCommaLine(data) {
+                  //convert string to array and remove whitespace
+                  let dataToArray = data.split('\n').map(item => item.trim());
+                  //convert array to string replacing comma with new line
+                  return dataToArray.join(",");
+              }
+              input[opType] = replaceCommaLine(event.target.result);
+              alert(event.target.result.replace(/\r/g, "\n"));
             });
 
             reader.readAsText(event.target.files[0]);
@@ -216,7 +223,6 @@
               selectTag.addEventListener("change", function (event) {
                 const inputType = event.target.value;
                 const opType = event.target.dataset.opType;
-                console.log(opType)
 
                 const newInputEl = inputType == "text"
                     ? TEMPLATES.INPUT.TEXTAREA
@@ -245,7 +251,6 @@
             .forEach(function (form) {
               form.addEventListener("submit", function (event) {
                 const opType = event.target.dataset.opType;
-                console.log(opType)
 
                 document.querySelector(`.input-real-data[data-op-type="${opType}"]`)
                     .value = input[opType];
@@ -358,7 +363,6 @@
         }
 
         const bytestring = output.result
-          .join(" ");
 
         document.querySelector(`.output-box[data-op-type="${output.type}"]`)
             .classList.remove("d-none");
@@ -369,9 +373,9 @@
             .innerHTML = bytestring;
 
         // file hasil generate key
-        var pri = output.result[0]
-        console.log(pri, String(output.result[0]))
-        var pub = String(output.result[1]) + ' ' + String(output.result[2])
+        var pri = output.result[1]
+
+        var pub = output.result[0]
         const downloadAnchorTaggankey1 = document
             .querySelector(`.output-box[data-op-type="genkey"] .output-file-result1 a`)
 
@@ -387,6 +391,7 @@
                                       + encodeURIComponent(pri));
 
         // file hasil enkripsi
+        console.log(output.result)
         const downlodAnchorTagenc = document
             .querySelector(`.output-box[data-op-type="enc"] .output-file-result a`)
             downlodAnchorTagenc.setAttribute("download", "hasil-enkripsi.txt");
@@ -394,13 +399,12 @@
                                       + encodeURIComponent(output.result));
            
         // file hasil dekripsi
-        var dec = output.result
         console.log(output.result)
         const downlodAnchorTagdec = document
             .querySelector(`.output-box[data-op-type="dec"] .output-file-result a`)
             downlodAnchorTagdec.setAttribute("download", "hasil-dekripsi.txt");
             downlodAnchorTagdec.setAttribute("href", "data:text/plain;charset=utf-8,"
-                                      + encodeURIComponent(dec));
+                                      + encodeURIComponent(output.result));
 
       })();
     };
